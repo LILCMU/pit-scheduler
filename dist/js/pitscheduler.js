@@ -687,7 +687,7 @@ var i18n = {
             }
 
             $toolbox.animate({
-                width: '460px'
+                width: '440px'
             }, 300);
             getContrastedColor();
         };
@@ -1153,7 +1153,7 @@ var i18n = {
                 settings.resize.origin = e.pageX;
             } else if (e.pageX < settings.resize.origin - 60) {
                 var newDate = (settings.resize.count - 0.5) + ' ' + (settings.currentDisplay == 'months' ? settings.i18n.day : settings.i18n.hour) + (settings.resize.count - 0.5 > 1 || settings.resize.count - 0.5 < -1 ? 's' : '');
-                $taskMarker.before('<div class="pts-task-tooltip" style="left:' + ($taskMarker.width() + $taskMarker.position().left - 120) + 'px;top:' + ($taskMarker.position().top - 30) + 'px""><div>' + (settings.resize.count - 0.5 > 0 ? '+' : '') + newDate + '</div></div>');
+                $taskMarker.before('<div class="pts-task-tooltip" style="left:' + ($taskMarker.width() + $taskMarker.position().left - 80) + 'px;top:' + ($taskMarker.position().top - 30) + 'px""><div>' + (settings.resize.count - 0.5 > 0 ? '+' : '') + newDate + '</div></div>');
                 settings.resize.count = settings.resize.count - 0.5;
                 $element.css('width', original_width - move + 'px');
                 settings.resize.origin = e.pageX;
@@ -1323,7 +1323,7 @@ var i18n = {
                     if (i < 24) {
                         $('.pts-main-content').append('<div class="pts-main-group-column" style="left:' + lineInterval + 'px"><div></div></div>');
                     }
-                    lineInterval += 120;
+                    lineInterval += 80;
                 }
             } else if (settings.currentDisplay == 'months') {
                 var dayDate = moment(settings.date.selected).add(-1 * (moment(settings.date.selected).format('D') - 1), 'day'),
@@ -1337,7 +1337,7 @@ var i18n = {
                     if (i < daysInMonth) {
                         $('.pts-main-content').append('<div class="pts-main-group-column" style="left:' + lineInterval + 'px"><div></div></div>');
                     }
-                    lineInterval += 120;
+                    lineInterval += 80;
                     dayDate.add(1, 'day');
                 }
             }
@@ -1405,8 +1405,8 @@ var i18n = {
                 $('.pts-main-group-header').css('width', '2880px');
                 $('.pts-main-group-user').css('width', '2880px');
             } else {
-                $('.pts-main-group-header').css('width', (120 * moment(settings.date.selected).daysInMonth()) + 'px');
-                $('.pts-main-group-user').css('width', (120 * moment(settings.date.selected).daysInMonth()) + 'px');
+                $('.pts-main-group-header').css('width', (80 * moment(settings.date.selected).daysInMonth()) + 'px');
+                $('.pts-main-group-user').css('width', (80 * moment(settings.date.selected).daysInMonth()) + 'px');
             }
             settings.users.forEach(function (user, userIndex) {
                 generateTaskLines(user, userIndex);
@@ -1521,14 +1521,14 @@ var i18n = {
 
             // If the task start date is in the current month
             if (moment(settings.date.selected).format('YYYYMM') == moment(task.start_date).format('YYYYMM')) {
-                var splitted = (moment(task.start_date).format('H') >= 12 ? 60 : 0),
-                    leftDistance = (120 * (moment(task.start_date).format('D') - 1)) + splitted - 6,
+                var splitted = (moment(task.start_date).format('H') >= 12 ? 40 : 0),
+                    leftDistance = (80 * (moment(task.start_date).format('D') - 1)) + splitted - 6,
                     label_end = false;
 
                 if (moment(task.end_date).format('YYYYMM') > moment(settings.date.selected).format('YYYYMM')) {
-                    var labelWidth = 120 * (parseInt(moment(settings.date.selected).daysInMonth()) - parseInt(moment(task.start_date).format('D'))) + (splitted == 0 ? 120 : 60);
+                    var labelWidth = 80 * (parseInt(moment(settings.date.selected).daysInMonth()) - parseInt(moment(task.start_date).format('D'))) + (splitted == 0 ? 80 : 40);
                 } else {
-                    var labelWidth = 120 * (moment(task.end_date).format('D') - moment(task.start_date).format('D') ) + (splitted == 0 ? 120 : 60) - (moment(task.end_date).format('H') <= 12 ? (moment(task.end_date).format('H') == 0 ? 120 : 60) : 0);
+                    var labelWidth = 80 * (moment(task.end_date).format('D') - moment(task.start_date).format('D') ) + (splitted == 0 ? 80 : 40) - (moment(task.end_date).format('H') <= 12 ? (moment(task.end_date).format('H') == 0 ? 80 : 40) : 0);
                     label_end = true;
                 }
                 topDistance = parseInt(topDistance);
@@ -1544,8 +1544,8 @@ var i18n = {
             if (moment(settings.date.selected).format('YYYYMM') == moment(task.end_date).format('YYYYMM')) {
                 if (moment(task.start_date).format('YYYYMM') < moment(settings.date.selected).format('YYYYMM')) {
 
-                    var splitted = (moment(task.end_date).format('H') <= 12 ? 60 : 0);
-                    var labelWidth = 120 * (moment(task.end_date).format('D')) - splitted - (moment(task.end_date).format('H') == 0 ? 60 : 0);
+                    var splitted = (moment(task.end_date).format('H') <= 12 ? 40 : 0);
+                    var labelWidth = 80 * (moment(task.end_date).format('D')) - splitted - (moment(task.end_date).format('H') == 0 ? 40 : 0);
 
                     topDistance = parseInt(topDistance);
                     var $task = ['<div class="pts-check-color progress-bar-striped pts-line-marker end" style="top:' + topDistance + 'px;left:0px;background-color:' + task.color + ';width:'+labelWidth+'px" data-task="' + task.id + '" data-user="' + userIndex + '">',
@@ -1590,14 +1590,14 @@ var i18n = {
 
             // If the task start date is in the current month
             if (moment(settings.date.selected).format('YYYYMMDD') == moment(task.start_date).format('YYYYMMDD')) {
-                var splitted = (moment(task.start_date).format('mm') >= 30 ? 60 : 0),
-                    leftDistance = (120 * (moment(task.start_date).format('H') )) + splitted - 6,
+                var splitted = (moment(task.start_date).format('mm') >= 30 ? 40 : 0),
+                    leftDistance = (80 * (moment(task.start_date).format('H') )) + splitted - 6,
                     label_end = false;
 
                 if (moment(task.end_date).format('YYYYMMDD') > moment(settings.date.selected).format('YYYYMMDD')) {
-                    var taskWidth = 120 * (24 - parseInt(moment(task.start_date).format('H')) - 1) + (splitted == 0 ? 120 : 60);
+                    var taskWidth = 80 * (24 - parseInt(moment(task.start_date).format('H')) - 1) + (splitted == 0 ? 80 : 40);
                 } else {
-                    var taskWidth = 120 * (moment(task.end_date).format('H') - moment(task.start_date).format('H')) + (splitted == 0 ? 120 : 60)  - (moment(task.end_date).format('mm') < 30 ? 120 : 60);
+                    var taskWidth = 80 * (moment(task.end_date).format('H') - moment(task.start_date).format('H')) + (splitted == 0 ? 80 : 40)  - (moment(task.end_date).format('mm') < 30 ? 80 : 40);
                     label_end = true;
                 }
                 topDistance = parseInt(topDistance);
@@ -1611,8 +1611,8 @@ var i18n = {
             // If the task end date is in the current month but not the start date
             if (moment(settings.date.selected).format('YYYYMMDD') == moment(task.end_date).format('YYYYMMDD')) {
                 if (moment(task.start_date).format('YYMMDD') < moment(settings.date.selected).format('YYMMDD')) {
-                    var splitted = (moment(task.end_date).format('mm') < 30 ? 120 : 60);
-                    var taskWidth = 120 * (moment(task.end_date).format('H')) - splitted + 120;
+                    var splitted = (moment(task.end_date).format('mm') < 30 ? 80 : 40);
+                    var taskWidth = 80 * (moment(task.end_date).format('H')) - splitted + 80;
 
                     topDistance = parseInt(topDistance);
                     var $task = '<div class="pts-check-color progress-bar-striped pts-line-marker end" style="top:' + topDistance + 'px;left:0px;background-color:' + task.color + ';width:'+taskWidth+'px" data-task="' + task.id + '" data-user="' + userIndex + '">' +
@@ -1838,8 +1838,8 @@ var i18n = {
                 '<input id="pts-add-user-input-name" type="text" class="form-control" maxlength="40">',
                 '<div id="pts-add-user-err-name" style="color:red"></div></div>',
                 '<div class="form-group"><label>' + settings.i18n.group + ' :</label>',
-                '<input id="pts-add-user-input-group" type="text" class="form-control" maxlength="60" placeholder="' + settings.i18n.createNewGroup + '">',
-                '<span>' + settings.i18n.or + '</span><select id="pts-add-user-select-group" type="select" class="form-control" maxlength="60">',
+                '<input id="pts-add-user-input-group" type="text" class="form-control" maxlength="40" placeholder="' + settings.i18n.createNewGroup + '">',
+                '<span>' + settings.i18n.or + '</span><select id="pts-add-user-select-group" type="select" class="form-control" maxlength="40">',
                 '<option disabled selected>' + settings.i18n.selectGroup + '</option></select></div>',
                 '<div class="btn-group">',
                 '<button type="button" class="pts-close-toolbox btn btn-danger">' + settings.i18n.cancel + '</button>',
@@ -1869,8 +1869,8 @@ var i18n = {
                 '<input id="pts-edit-user-input-name" type="text" class="form-control" maxlength="40" value="' + user.name + '">',
                 '<div id="pts-edit-user-err-name" style="color:red"></div></div>',
                 '<div class="form-group"><label>' + settings.i18n.group + ' :</label>',
-                '<input id="pts-edit-user-input-group" type="text" class="form-control" maxlength="60" placeholder="' + settings.i18n.createNewGroup + '" value="' + user.group + '">',
-                '<span>' + settings.i18n.or + '</span><select id="pts-edit-user-select-group" type="select" class="form-control" maxlength="60">',
+                '<input id="pts-edit-user-input-group" type="text" class="form-control" maxlength="40" placeholder="' + settings.i18n.createNewGroup + '" value="' + user.group + '">',
+                '<span>' + settings.i18n.or + '</span><select id="pts-edit-user-select-group" type="select" class="form-control" maxlength="40">',
                 '<option disabled selected>' + settings.i18n.selectGroup + '</option></select></div>',
                 '<div class="btn-group">',
                 '<button type="button" class="pts-close-toolbox btn btn-danger">' + settings.i18n.cancel + '</button>',
@@ -2238,7 +2238,7 @@ var i18n = {
             }
         });
         $(document).on('mousemove', function (e) {
-            if (settings.resize.timeout > 0 && (e.pageX > settings.resize.origin + 60 || e.pageX < settings.resize.origin - 60)) {
+            if (settings.resize.timeout > 0 && (e.pageX > settings.resize.origin + 40 || e.pageX < settings.resize.origin - 40)) {
                 moveTaskResize(e);
             }
         });

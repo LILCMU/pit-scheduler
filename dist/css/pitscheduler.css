@@ -159,8 +159,8 @@
 }
 .pts-column-element {
     position: relative;
-    width: 120px;
-    min-width: 120px;
+    width: 80px;
+    min-width: 80px;
     border-right: 1px solid #BDBDBD;
     text-align: center;
 }
@@ -293,13 +293,13 @@
     position: absolute;
     border-right: 1px solid #BDBDBD;
     height: 100%;
-    width: 120px;
+    width: 80px;
 }
 
 .pts-main-group-column > div {
     border-left: 1px solid #eee;
     height: 100%;
-    margin-left: 60px;
+    margin-left: 40px;
     width: 100%;
 }
 

@@ -551,7 +551,8 @@ var i18n = {
                     }
                 }
             });
-            return tasks.length * 40;
+            ////return tasks.length * 40;
+            return 40;
         };
 
         /**
@@ -1395,6 +1396,7 @@ var i18n = {
                     var userLineHeight = user.lineHeight;
                     if (user.group === group.name && user.isShowed == true && userLineHeight > 0) {
                         $('#group-container-' + groupIndex).append('<div id="content-user-' + userIndex + '" class="pts-main-group-user" style="height:' + userLineHeight + 'px"></div>');
+                        
                     }
                 });
                 if ($('.close-group-panel[data-group='+groupIndex+']').attr('data-toggle') === 'closed') {
@@ -1448,7 +1450,7 @@ var i18n = {
             if (!user.isShowed || user.lineHeight <= 0 || !group) return;
 
             var $userNameUI = '<div class="pts-group-user pts-show-user" style="height:' + user.lineHeight + 'px" data-user="' + user.index + '"><p>' + user.name + '</p></div>';
-
+            
             $('#' + group + ' > .pts-group-content').append($userNameUI);
 
         };
@@ -1478,7 +1480,8 @@ var i18n = {
                         if (task.end_date) {
                             if (moment(settings.date.selected).format('YYYYMM') >= moment(task.start_date).format('YYYYMM')
                                 && moment(settings.date.selected).format('YYYYMM') <= moment(task.end_date).format('YYYYMM')) {
-                                topDistance += generateTaskLineMonth(user, task, topDistance);
+                                ////topDistance += generateTaskLineMonth(user, task, topDistance);
+                                generateTaskLineMonth(user, task, topDistance);
                             }
                         }
                     }

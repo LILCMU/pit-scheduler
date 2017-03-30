@@ -65,11 +65,11 @@
     $(document).ready(function () {
         $("#pit-scheduler").pitScheduler({
             locale: 'en',
-            defaultDisplay: 'months',
+            defaultDisplay: '10days',
             hideEmptyLines: true,
-            disableLabelsMovement: false,
+            disableLabelsMovement: true,
             defaultGroupName: 'Default group',
-            defaultDate: '2016-09-08 16:30',
+            defaultDate: moment(),
             disableNotifications: false,
             notificationDuration: 4000,
             hideSpinner: true,
@@ -83,14 +83,15 @@
             onUserTaskDeletion: '',
             onTaskEdition: '',
             disableUndo: false,
-            resizeTask: true,
+            resizeTask: false,
+            startIndex: 2,
             tasks:  [
                 {
                     id: '1',
                     name: 'Roger',
                     description: 'He will arrive around 3pm',
                     color: '#808080',
-                    
+
                 },
                 {
                     id: '2',
@@ -119,19 +120,14 @@
                     group: 'Floor 1',
                     tasks: [
                         {
-                            id: '1',
-                            start_date: '2016-09-02 12:00',
-                            end_date: '2016-09-03 12:00'
-                        },
-                        {
                             id: '2',
-                            start_date: '2016-09-03 12:00',
-                            end_date: '2016-09-05 12:00'
+                            start_date: moment().add(-2, 'days').startOf('day').set('hour', 12),
+                            end_date: moment().add(0, 'days').startOf('day').set('hour', 12)
                         },
                         {
                             id: '4',
-                            start_date: '2016-09-07 12:00',
-                            end_date: '2016-09-08 12:00'
+                            start_date: moment().add(1, 'days').startOf('day').set('hour', 12),
+                            end_date: moment().add(3, 'days').startOf('day').set('hour', 12)
                         }
                     ]
                 },
@@ -141,8 +137,24 @@
                     tasks: [
                         {
                             id: '3',
-                            start_date: '2016-09-03 12:00',
-                            end_date: '2016-09-04 12:00'
+                            start_date: moment().add(-2, 'days').startOf('day').set('hour', 12),
+                            end_date: moment().add(-1, 'days').startOf('day').set('hour', 12)
+                        }
+                    ]
+                },
+                {
+                    name: '103',
+                    group: 'Floor 1',
+                    tasks: [
+                        {
+                            id: '1',
+                            start_date: moment().add(0, 'days').startOf('day').set('hour', 12),
+                            end_date: moment().add(2, 'days').startOf('day').set('hour', 12)
+                        },
+                        {
+                            id: '4',
+                            start_date: moment().add(2, 'days').startOf('day').set('hour', 12),
+                            end_date: moment().add(4, 'days').startOf('day').set('hour', 12)
                         }
                     ]
                 },
@@ -151,11 +163,21 @@
                     group: 'Floor 2',
                     tasks: [
                         {
-                            id: '1',
-                            start_date: '2016-09-02 12:00',
-                            end_date: '2016-09-03 12:00'
+                            id: '2',
+                            start_date: moment().add(6, 'days').startOf('day').set('hour', 12),
+                            end_date: moment().add(8, 'days').startOf('day').set('hour', 12)
                         }
-
+                    ]
+                },
+                {
+                    name: '202',
+                    group: 'Floor 2',
+                    tasks: [
+                        {
+                            id: '3',
+                            start_date: moment().add(3, 'days').startOf('day').set('hour', 12),
+                            end_date: moment().add(5, 'days').startOf('day').set('hour', 12)
+                        }
                     ]
                 }
             ]

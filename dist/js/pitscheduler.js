@@ -13,6 +13,7 @@ var i18n = {
     en: {
         day: 'Day',
         days: 'Days',
+        tendays: '10 Days',
         months: 'Months',
         list: 'List',
         tasks: 'Tasks',
@@ -125,7 +126,7 @@ var i18n = {
                 selected: (options.defaultDate && moment(options.defaultDate).isValid() ? moment(options.defaultDate) : moment())
             },
             locale: (options.locale && i18n.allowed.indexOf(options.locale) != -1 ? options.locale : i18n.allowed[0]), //if no locale is defined, it takes the first allowed one
-            currentDisplay: (options.defaultDisplay && 'days;months;list'.indexOf(options.defaultDisplay) != -1 ? options.defaultDisplay : 'months'),
+            currentDisplay: (options.defaultDisplay && 'days;10days;months;list'.indexOf(options.defaultDisplay) != -1 ? options.defaultDisplay : 'months'),
             projectState : 'production', //debug will log all function calls, development will only log the important ones
             tasks: options.tasks || [],
             users: options.users || [],
@@ -134,7 +135,9 @@ var i18n = {
             hideEmptyLines: options.hideEmptyLines || true,
             undo: [],
             resize: {},
-            filters: []
+            filters: [],
+            startIndex: options.startIndex || 0,
+            numDays: options.numDays || 10,
         }, options);
 
         moment.locale(settings.locale);
@@ -174,6 +177,14 @@ var i18n = {
                 case 'days':
                     setButtonViewFocus('day');
                     settings.currentDisplay = 'days';
+                    initMainContent();
+                    updateHeaderDates();
+                    $('.pts-line-title-container div').scrollTop(scrollTop);
+                    break;
+                case '10days':
+                    // settings.date.selected = moment();
+                    setButtonViewFocus('10days');
+                    settings.currentDisplay = '10days';
                     initMainContent();
                     updateHeaderDates();
                     $('.pts-line-title-container div').scrollTop(scrollTop);
@@ -227,6 +238,15 @@ var i18n = {
             switch (settings.currentDisplay) {
                 case 'days':
                     $('.pts-header-date-display').append(moment(settings.date.selected).locale(settings.locale).format('LL'));
+                    break;
+                case '10days':
+                    var range = getDateRange(settings.date.selected,{custom:true});
+                    var text = moment(range.start).locale(settings.locale).format('D MMMM') + ' - ' + moment(range.end).locale(settings.locale).format('D MMMM YYYY');
+                    if (moment(range.start).isSame(range.end, 'month')) {
+                        text = moment(range.start).locale(settings.locale).format('D') + ' - ' + moment(range.end).locale(settings.locale).format('D MMMM YYYY');
+                    }
+
+                    $('.pts-header-date-display').append(text);
                     break;
                 case 'months':
                     $('.pts-header-date-display').append(moment(settings.date.selected).locale(settings.locale).format('MMMM YYYY'));
@@ -423,6 +443,12 @@ var i18n = {
             closeToolbox();
             if (settings.currentDisplay == 'months') {
                 settings.date.selected = moment(settings.date.selected).add(1, 'months');
+            } else if (settings.currentDisplay == '10days') {
+                // if (moment(settings.date.selected).date() > 20) {
+                //   settings.date.selected = moment(settings.date.selected).add(1, 'months').set('date', 1);;
+                // } else {
+                  settings.date.selected = moment(settings.date.selected).add(5, 'days');
+                // }
             } else {
                 settings.date.selected = moment(settings.date.selected).add(1, 'day');
             }
@@ -442,6 +468,13 @@ var i18n = {
             closeToolbox();
             if (settings.currentDisplay == 'months') {
                 settings.date.selected = moment(settings.date.selected).add(-1, 'months');
+            } else if (settings.currentDisplay == '10days') {
+                // if (moment(settings.date.selected).date() <= 10) {
+                //   settings.date.selected = moment(settings.date.selected).add(-1, 'months').set('date', 21);
+                // } else {
+                //   settings.date.selected = moment(settings.date.selected).add(-5, 'days');
+                // }
+                settings.date.selected = moment(settings.date.selected).add(-5, 'days');
             } else {
                 settings.date.selected = moment(settings.date.selected).add(-1, 'day');
             }
@@ -519,6 +552,11 @@ var i18n = {
                 start_date: (settings.currentDisplay == 'days' ? moment(settings.date.selected).startOf('day') : moment(settings.date.selected).startOf('month')),
                 end_date: (settings.currentDisplay == 'days' ? moment(settings.date.selected).endOf('day') : moment(settings.date.selected).endOf('month'))
             };
+            if (settings.currentDisplay == '10days') {
+              var range = getDateRange(settings.date.selected, {custom:true});
+              originDates.start_date = range.start;
+              originDates.end_date = range.end;
+            }
             user.tasks.forEach(function (task) {
                 if (isDateInDate(originDates, task) == true) {
                     response = true;
@@ -569,6 +607,10 @@ var i18n = {
                     start_date: (settings.currentDisplay == 'days' ? moment(settings.date.selected).startOf('day') : moment(settings.date.selected).startOf('month')),
                     end_date: (settings.currentDisplay == 'days' ? moment(settings.date.selected).endOf('day') : moment(settings.date.selected).endOf('month'))
                 };
+            if (settings.currentDisplay == '10days') {
+                var range = getDateRange(settings.date.selected,{custom:true});
+                originDates = {start_date:range.start, end_date:range.end};
+            }
             if (!user.tasks) return generateNotification('warning', '<b>' + user.name + '</b> ' + settings.i18n.notif.userHasNoTask);
             user.tasks.forEach(function (task) {
                 var original = getTaskById(task.id)
@@ -1277,6 +1319,7 @@ var i18n = {
                 '</span></div>',
                 '<div class="pts-header-right-container pull-right">',
                 '<button class="btn btn-sm pts-btn-day-view ' + (settings.currentDisplay === "days" ? "pts-active" : "") + '">' + settings.i18n.days + '</button>',
+                '<button class="btn btn-sm pts-btn-10days-view ' + (settings.currentDisplay === "10days" ? "pts-active" : "") + '">' + settings.i18n.tendays + '</button>',
                 '<button class="btn btn-sm pts-btn-month-view ' + (settings.currentDisplay === "months" ? "pts-active" : "") + '">' + settings.i18n.months + '</button>',
                 '<button class="btn btn-sm pts-btn-list-view" ' + (settings.currentDisplay === "list" ? "pts-active" : "") + '>' + settings.i18n.list + '</button></div></div>'].join('\n');
 
@@ -1308,6 +1351,36 @@ var i18n = {
         };
 
         /**
+         * Get 10 days Range
+         */
+        var getDateRange = function (theDate, option) {
+
+          if (option==undefined) {
+            var daysInMonth = parseInt(moment(theDate).daysInMonth());
+            var startDate = Math.floor(moment(theDate).format('D')/10)*10 + 1;
+            var endDate = startDate+9;
+
+            if (startDate == 21) {
+              endDate = daysInMonth;
+            }
+            var result = {start:moment(theDate).set('date',startDate).startOf('day'), end:moment(theDate).set('date',endDate).endOf('day')};
+            return result;
+          } else if (option.custom !== undefined) {
+            option.startIndex = option.startIndex || settings.startIndex;
+            option.numDays = option.numDays || settings.numDays;
+            var result = {
+              start:moment(theDate).add(-option.startIndex,'days').startOf('day'),
+              end:moment(theDate).add(option.numDays-option.startIndex-1,'days').endOf('day')
+            };
+            return result;
+          } else {
+            return {};
+          }
+
+
+        }
+
+        /**
          * Generates the columns lines
          */
         var generateTableLines = function () {
@@ -1326,13 +1399,33 @@ var i18n = {
                     }
                     lineInterval += 80;
                 }
+              } else if (settings.currentDisplay == '10days') {
+                  var range = getDateRange(settings.date.selected,{custom:true});
+                  var dayDate = moment(settings.date.selected).add(-settings.startIndex,'days').startOf('day'),
+                      lineInterval = 0,
+                      daysInMonth = parseInt(moment(settings.date.selected).daysInMonth()) + 1;
+
+                  var numDays = 10;
+
+                  for (var i=0; i<settings.numDays; i++) {
+                      var loopDate = moment(dayDate).format('D');
+                      var isToday = ( moment(dayDate).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD') );
+                      $('.pts-column-title-container > div').append(
+                          '<div class="pts-column-element ' + (isToday?'today':'') + '" data-date="' + moment(dayDate).format('YYYY-MM-DD') + '">' +
+                          ("<p>"+ dayDate.locale(settings.locale).format('ddd') + ' ' + loopDate +"</p>") + '</div>'
+                      );
+                      $('.pts-main-content').append('<div class="pts-main-group-column" style="left:' + lineInterval + 'px"><div></div></div>');
+                      lineInterval += 80;
+                      dayDate.add(1, 'day');
+                  }
             } else if (settings.currentDisplay == 'months') {
                 var dayDate = moment(settings.date.selected).add(-1 * (moment(settings.date.selected).format('D') - 1), 'day'),
                     lineInterval = 0,
                     daysInMonth = parseInt(moment(settings.date.selected).daysInMonth()) + 1;
                 for (var i=1; i <= daysInMonth; i++) {
+                    var isToday = ( moment(dayDate).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD') );
                     $('.pts-column-title-container > div').append(
-                        '<div class="pts-column-element" data-date="' + moment(dayDate).format('YYYY-MM-DD') + '">' +
+                        '<div class="pts-column-element ' + (isToday?'today':'') + '" data-date="' + moment(dayDate).format('YYYY-MM-DD') + '">' +
                         (i < daysInMonth  ? "<p>"+ dayDate.locale(settings.locale).format('ddd') + ' ' + i +"</p>" : "") + '</div>'
                     );
                     if (i < daysInMonth) {
@@ -1396,7 +1489,7 @@ var i18n = {
                     var userLineHeight = user.lineHeight;
                     if (user.group === group.name && user.isShowed == true && userLineHeight > 0) {
                         $('#group-container-' + groupIndex).append('<div id="content-user-' + userIndex + '" class="pts-main-group-user" style="height:' + userLineHeight + 'px"></div>');
-                        
+
                     }
                 });
                 if ($('.close-group-panel[data-group='+groupIndex+']').attr('data-toggle') === 'closed') {
@@ -1406,6 +1499,9 @@ var i18n = {
             if (settings.currentDisplay == 'days') {
                 $('.pts-main-group-header').css('width', '2880px');
                 $('.pts-main-group-user').css('width', '2880px');
+            } else if (settings.currentDisplay == '10days') {
+              $('.pts-main-group-header').css('width', (80 * settings.numDays) + 'px');
+              $('.pts-main-group-user').css('width', (80 * settings.numDays) + 'px');
             } else {
                 $('.pts-main-group-header').css('width', (80 * moment(settings.date.selected).daysInMonth()) + 'px');
                 $('.pts-main-group-user').css('width', (80 * moment(settings.date.selected).daysInMonth()) + 'px');
@@ -1450,7 +1546,7 @@ var i18n = {
             if (!user.isShowed || user.lineHeight <= 0 || !group) return;
 
             var $userNameUI = '<div class="pts-group-user pts-show-user" style="height:' + user.lineHeight + 'px" data-user="' + user.index + '"><p>' + user.name + '</p></div>';
-            
+
             $('#' + group + ' > .pts-group-content').append($userNameUI);
 
         };
@@ -1484,8 +1580,16 @@ var i18n = {
                                 generateTaskLineMonth(user, task, topDistance);
                             }
                         }
-                    }
-                    else if (settings.currentDisplay === 'days') {
+                    } else if (settings.currentDisplay === '10days') {
+                        var range = getDateRange(settings.date.selected, {custom:true});
+                        task = hideTaskSuperposition(i, task, user);
+                        if (task.end_date) {
+                            if (moment(task.start_date).isSameOrBefore(range.end)
+                                && moment(task.end_date).isSameOrAfter(range.start) ) {
+                                generateTaskLineCustom(user, task, topDistance, 10);
+                            }
+                        }
+                    } else if (settings.currentDisplay === 'days') {
                         if (task.end_date) {
                             if (moment(settings.date.selected).format('YYYYMMDD') >= moment(task.start_date).format('YYYYMMDD')
                                 && moment(settings.date.selected).format('YYYYMMDD') <= moment(task.end_date).format('YYYYMMDD')) {
@@ -1560,6 +1664,78 @@ var i18n = {
 
             // If the task start and end dates are not in the current month but the task is
             if (moment(settings.date.selected).format('YYYYMM') != moment(task.end_date).format('YYYYMM') && moment(settings.date.selected).format('YYYYMM') != moment(task.start_date).format('YYYYMM')) {
+                topDistance = parseInt(topDistance);
+                var $task = '<div class="pts-check-color progress-bar-striped pts-line-marker middle" style="top:' + topDistance + 'px;left:0px;background-color:' + task.color + ';" data-task="' + task.id + '" data-user="' + userIndex + '">' +
+                    '<p class="pts-line-marker-label text-no-select" data-toggle="tooltip" title="' + task.name + '">' + task.name + $tag + '</p></div>';
+                $('#content-user-' + userIndex + ' > .pts-line-marker-group-' + task.index).append($task);
+            }
+            setTaskLabelPosition();
+            getContrastedColor();
+            return (existingTaskLine.length > 0 ? 0 : 40);
+        };
+
+        /**
+         * Generates one task into the month view
+         * @param {Object} user
+         * @param {Object} task
+         * @param {Number} topDistance
+         * @returns {Number} topDistance
+         */
+        var generateTaskLineCustom = function (user, task, topDistance, numDays) {
+            log.info('CALL FUNCTION: generateTaskLineMonth: user: ' + user.name + ':task: ' + task.name);
+
+            var userIndex = user.index;
+            var existingTaskLine = $('div[data-task=' + task.id + '][data-user=' + userIndex + '] > .pts-line-marker');
+            var $tag = (task.tag  ? ' <span class="label label-default pts-check-color" style="background-color:' + task.tagColor  + '">' + task.tag + '</span>' : '');
+            var $resizer = (settings.resizeTask ? '<i class="pts-task-resizer glyphicon glyphicon-option-vertical" data-task="' + task.id + '" data-user="' + userIndex + '" data-end="' + task.end_date + '"></i>' : '');
+            var range = getDateRange(settings.date.selected, {custom:true});
+
+            if (existingTaskLine.length > 0) {
+                topDistance = existingTaskLine.css('top');
+            }
+
+            $('#content-user-' + userIndex).append('<div class="pts-line-marker-group-' + task.index + '" data-task="' + task.id + '" data-user="' + userIndex + '"></div>');
+
+            // If the task start date is in the current range
+            if (moment(task.start_date).isBetween(range.start, range.end, 'days', '[]')) {
+                var splitted = (moment(task.start_date).format('H') >= 12 ? 40 : 0),
+                    label_end = false,
+                    leftDistance = (80 * ( moment(task.start_date).diff(range.start, 'days') )) + splitted - 6;
+
+                if (moment(task.end_date).isAfter(range.end)) {
+                    var labelWidth = 80 * ( moment(range.end).diff(task.start_date, 'days') ) + (splitted == 0 ? 80 : 40);
+                } else {
+                    var labelWidth = 80 * ( moment(task.end_date).diff(task.start_date, 'days') ) + (splitted == 0 ? 80 : 40) - (moment(task.end_date).format('H') <= 12 ? (moment(task.end_date).format('H') == 0 ? 80 : 40) : 0);
+                    label_end = true;
+                }
+                topDistance = parseInt(topDistance);
+                leftDistance = parseInt(leftDistance);
+                var $task = ['<div class="pts-check-color progress-bar-striped pts-line-marker '+ (label_end ? 'complete' : 'start') +
+                '" style="top:'+topDistance+'px;left:'+ leftDistance +'px;background-color:' + task.color + ';width:'+labelWidth+'px;' + task.superposed + '" data-task="' + task.id + '" data-user="' + userIndex + '">',
+                    '<p class="pts-line-marker-label text-no-select" data-toggle="tooltip" title="' + task.name + ' - ' + (task.tag || '') + '">' + task.name + $tag + '</p>',
+                    $resizer + '</div>'].join('\n');
+                $('#content-user-' + userIndex + ' > .pts-line-marker-group-' + task.index).append($task);
+            }
+
+            // If the task end date is in the current month but not the start date
+            if (moment(task.end_date).isBetween(range.start, range.end, 'days', '[]')) {
+
+                if (moment(task.start_date).isBefore(range.start)) {
+                    var splitted = (moment(task.end_date).format('H') <= 12 ? 40 : 0);
+                    var dayDiff = moment(moment(task.end_date).startOf('day')).diff(moment(task.start_date).startOf('day'), 'days');
+                    var dayDiff = moment(task.end_date).diff(task.start_date, 'days');
+                    var labelWidth = 80 * (dayDiff) - splitted - (moment(task.end_date).format('H') == 0 ? 40 : 0);
+
+                    topDistance = parseInt(topDistance);
+                    var $task = ['<div class="pts-check-color progress-bar-striped pts-line-marker end" style="top:' + topDistance + 'px;left:0px;background-color:' + task.color + ';width:'+labelWidth+'px" data-task="' + task.id + '" data-user="' + userIndex + '">',
+                        '<p class="pts-line-marker-label text-no-select" data-toggle="tooltip" title="' + task.name + '">' + task.name + $tag + '</p>',
+                        $resizer + '</div>'].join('\n');
+                    $('#content-user-' + userIndex + ' > .pts-line-marker-group-' + task.index).append($task);
+                }
+            }
+
+            // If the task start and end dates are not in the current month but the task is
+            if (moment(task.start_date).isBefore(range.start) &&  moment(task.end_date).isAfter(range.end)) {
                 topDistance = parseInt(topDistance);
                 var $task = '<div class="pts-check-color progress-bar-striped pts-line-marker middle" style="top:' + topDistance + 'px;left:0px;background-color:' + task.color + ';" data-task="' + task.id + '" data-user="' + userIndex + '">' +
                     '<p class="pts-line-marker-label text-no-select" data-toggle="tooltip" title="' + task.name + '">' + task.name + $tag + '</p></div>';
@@ -2253,6 +2429,10 @@ var i18n = {
         $('.pts-btn-day-view').click( function () {
             updateDisplay('days');
         });
+        $('.pts-btn-10days-view').click( function () {
+            updateDisplay('10days');
+            settings.date.selected = moment();
+        });
         $('.pts-btn-month-view').click( function () {
             updateDisplay('months');
         });
@@ -2699,7 +2879,7 @@ var i18n = {
                 },
 
                 viewMode: function (viewMode) {
-                    if ('days;months;list'.indexOf(viewMode) !== -1) {
+                    if ('days;10days;months;list'.indexOf(viewMode) !== -1) {
                         settings.currentDisplay = viewMode;
                         updateDisplay(settings.currentDisplay);
                     } else {

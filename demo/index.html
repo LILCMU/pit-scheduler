@@ -61,6 +61,10 @@
 <script src="js/bootstrap-datetimepicker.js"></script>
 <script src="../dist/js/pitscheduler.js"></script>
 <script>
+    activeColor = '#536DFE';
+    reservedColor = '#81409c';
+    pastColor = '#E0E0E0';
+    noteColor = '#f89e00';
 
     $(document).ready(function () {
         $("#pit-scheduler").pitScheduler({
@@ -85,34 +89,73 @@
             disableUndo: false,
             resizeTask: false,
             startIndex: 2,
+
             tasks:  [
                 {
                     id: '1',
                     name: 'Roger',
                     description: 'He will arrive around 3pm',
-                    color: '#808080',
+                    color: pastColor,
 
                 },
                 {
                     id: '2',
                     name: 'Jack Panpai',
                     description: '',
-                    color: '#536DFE'
+                    color: activeColor
                 },
                 {
                     id: '3',
                     name: 'Runbeau',
                     description: 'She will stay with 2 more people',
-                    color: '#536DFE',
-                    tag: 'Late Checkin',
-                    tagColor: '#d200a5'
+                    color: pastColor,
+
                 },
                 {
                     id: '4',
                     name: 'Atom',
-                    color: '#f89e00',
+                    color: reservedColor,
 
-                }
+                },
+                {
+                    id: '5',
+                    name: 'Julia',
+                    color: reservedColor,
+                    tag: 'LC',
+                    tagColor: noteColor
+                },
+                {
+                    id: '6',
+                    name: 'John',
+                    color: reservedColor,
+
+                },
+                {
+                    id: '7',
+                    name: 'Izack',
+                    color: reservedColor,
+                },                
+                {
+                    id: '8',
+                    name: 'Danielle',
+                    color: pastColor,
+                }, 
+                {
+                    id: '9',
+                    name: 'Kylie',
+                    color: activeColor,
+                }, 
+                {
+                    id: '10',
+                    name: 'Nancy',
+                    color: pastColor,
+                }, 
+                {
+                    id: '11',
+                    name: 'Nancy',
+                    color: activeColor,
+                }, 
+
             ],
             users: [
                    {
@@ -139,7 +182,13 @@
                             id: '3',
                             start_date: moment().add(-2, 'days').startOf('day').set('hour', 12),
                             end_date: moment().add(-1, 'days').startOf('day').set('hour', 12)
+                        }, 
+                        {
+                            id: '4',
+                            start_date: moment().add(1, 'days').startOf('day').set('hour', 12),
+                            end_date: moment().add(3, 'days').startOf('day').set('hour', 12)
                         }
+
                     ]
                 },
                 {
@@ -147,15 +196,16 @@
                     group: 'Floor 1',
                     tasks: [
                         {
-                            id: '1',
+                            id: '5',
                             start_date: moment().add(0, 'days').startOf('day').set('hour', 12),
                             end_date: moment().add(2, 'days').startOf('day').set('hour', 12)
                         },
                         {
-                            id: '4',
-                            start_date: moment().add(2, 'days').startOf('day').set('hour', 12),
-                            end_date: moment().add(4, 'days').startOf('day').set('hour', 12)
+                            id: '8',
+                            start_date: moment().add(-1, 'days').startOf('day').set('hour', 12),
+                            end_date: moment().add(0, 'days').startOf('day').set('hour', 12)
                         }
+
                     ]
                 },
                 {
@@ -163,10 +213,22 @@
                     group: 'Floor 2',
                     tasks: [
                         {
-                            id: '2',
+                            id: '6',
                             start_date: moment().add(6, 'days').startOf('day').set('hour', 12),
                             end_date: moment().add(8, 'days').startOf('day').set('hour', 12)
+                        },
+                        {
+                            id: '10',
+                            start_date: moment().add(-2, 'days').startOf('day').set('hour', 12),
+                            end_date: moment().add(-1, 'days').startOf('day').set('hour', 12)
+                        },
+                        {
+                            id: '11',
+                            start_date: moment().add(0, 'days').startOf('day').set('hour', 12),
+                            end_date: moment().add(1, 'days').startOf('day').set('hour', 12)
                         }
+
+
                     ]
                 },
                 {
@@ -174,10 +236,16 @@
                     group: 'Floor 2',
                     tasks: [
                         {
-                            id: '3',
+                            id: '7',
                             start_date: moment().add(3, 'days').startOf('day').set('hour', 12),
                             end_date: moment().add(5, 'days').startOf('day').set('hour', 12)
+                        },
+                        {
+                            id: '9',
+                            start_date: moment().add(-1, 'days').startOf('day').set('hour', 12),
+                            end_date: moment().add(2, 'days').startOf('day').set('hour', 12)
                         }
+
                     ]
                 }
             ]

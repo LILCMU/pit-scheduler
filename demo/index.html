@@ -63,13 +63,156 @@
 <script>
     activeColor = '#536DFE';
     reservedColor = '#81409c';
-    pastColor = '#E0E0E0';
+    pastColor = '#8bc34a';
     noteColor = '#f89e00';
+
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    var tasks = [{
+            id: '1',
+            name: 'Roger',
+            description: 'He will arrive around 3pm',
+            color: pastColor,
+
+        },
+        {
+            id: '2',
+            name: 'Jack Panpai',
+            description: '',
+            color: activeColor
+        },
+        {
+            id: '3',
+            name: 'Runbeau',
+            description: 'She will stay with 2 more people',
+            color: pastColor,
+
+        },
+        {
+            id: '4',
+            name: 'Atom',
+            color: reservedColor,
+
+        },
+        {
+            id: '5',
+            name: 'Julia',
+            color: reservedColor,
+            tag: 'LC',
+            tagColor: noteColor
+        },
+        {
+            id: '6',
+            name: 'John',
+            color: reservedColor,
+
+        },
+        {
+            id: '7',
+            name: 'Izack',
+            color: reservedColor,
+        },
+        {
+            id: '8',
+            name: 'Danielle',
+            color: pastColor,
+        },
+        {
+            id: '9',
+            name: 'Kylie',
+            color: activeColor,
+        },
+        {
+            id: '10',
+            name: 'Nancy',
+            color: pastColor,
+        },
+        {
+            id: '11',
+            name: 'Nancy',
+            color: activeColor,
+        },
+
+    ]
+
+    var users = [{
+            name: '101',
+            group: 'Floor 1',
+            tasks: [{
+                    id: '2',
+                    start_date: moment().add(-2, 'days').startOf('day').set('hour', 12),
+                    end_date: moment().add(0, 'days').startOf('day').set('hour', 12)
+                },
+                {
+                    id: '4',
+                    start_date: moment().add(1, 'days').startOf('day').set('hour', 12),
+                    end_date: moment().add(3, 'days').startOf('day').set('hour', 12)
+                }
+            ]
+        },
+        {
+            name: '102',
+            group: 'Floor 1',
+            tasks: [{
+                    id: '3',
+                    start_date: moment().add(-2, 'days').startOf('day').set('hour', 12),
+                    end_date: moment().add(-1, 'days').startOf('day').set('hour', 12)
+                },
+                {
+                    id: '4',
+                    start_date: moment().add(1, 'days').startOf('day').set('hour', 12),
+                    end_date: moment().add(3, 'days').startOf('day').set('hour', 12)
+                }
+
+            ]
+        },
+        {
+            name: '103',
+            group: 'Floor 1',
+            tasks: [{
+                    id: '5',
+                    start_date: moment().add(0, 'days').startOf('day').set('hour', 12),
+                    end_date: moment().add(2, 'days').startOf('day').set('hour', 12)
+                },
+                {
+                    id: '8',
+                    start_date: moment().add(-1, 'days').startOf('day').set('hour', 12),
+                    end_date: moment().add(0, 'days').startOf('day').set('hour', 12)
+                }
+
+            ]
+        }
+    ]
+
+    for (var i=1;i<=7;i++) {
+        var user = {
+            name: ( (i<4 ? 200 : 300) +i ).toString(),
+            group: 'Floor '+(i<4 ? 2 : 3),
+            tasks: []
+        }
+
+        var localStartDate = getRandomInt(-3,4);
+        for (var j=0;j<=getRandomInt(2,4);j++){
+          var localRandom = getRandomInt(1,4);
+          user.tasks.push({
+              id: getRandomInt(1,tasks.length).toString(),
+              start_date: moment().add(localStartDate, 'days').startOf('day').set('hour', 12),
+              end_date: moment().add(localStartDate+localRandom, 'days').startOf('day').set('hour', 12)
+          });
+
+          localStartDate += localRandom+getRandomInt(0,2);
+
+        }
+
+        users.push(user);
+      }
 
     $(document).ready(function () {
         $("#pit-scheduler").pitScheduler({
             locale: 'en',
-            defaultDisplay: '10days',
+            defaultDisplay: '15days',
             hideEmptyLines: true,
             disableLabelsMovement: true,
             defaultGroupName: 'Default group',
@@ -89,166 +232,8 @@
             disableUndo: false,
             resizeTask: false,
             startIndex: 2,
-
-            tasks:  [
-                {
-                    id: '1',
-                    name: 'Roger',
-                    description: 'He will arrive around 3pm',
-                    color: pastColor,
-
-                },
-                {
-                    id: '2',
-                    name: 'Jack Panpai',
-                    description: '',
-                    color: activeColor
-                },
-                {
-                    id: '3',
-                    name: 'Runbeau',
-                    description: 'She will stay with 2 more people',
-                    color: pastColor,
-
-                },
-                {
-                    id: '4',
-                    name: 'Atom',
-                    color: reservedColor,
-
-                },
-                {
-                    id: '5',
-                    name: 'Julia',
-                    color: reservedColor,
-                    tag: 'LC',
-                    tagColor: noteColor
-                },
-                {
-                    id: '6',
-                    name: 'John',
-                    color: reservedColor,
-
-                },
-                {
-                    id: '7',
-                    name: 'Izack',
-                    color: reservedColor,
-                },                
-                {
-                    id: '8',
-                    name: 'Danielle',
-                    color: pastColor,
-                }, 
-                {
-                    id: '9',
-                    name: 'Kylie',
-                    color: activeColor,
-                }, 
-                {
-                    id: '10',
-                    name: 'Nancy',
-                    color: pastColor,
-                }, 
-                {
-                    id: '11',
-                    name: 'Nancy',
-                    color: activeColor,
-                }, 
-
-            ],
-            users: [
-                   {
-                    name: '101',
-                    group: 'Floor 1',
-                    tasks: [
-                        {
-                            id: '2',
-                            start_date: moment().add(-2, 'days').startOf('day').set('hour', 12),
-                            end_date: moment().add(0, 'days').startOf('day').set('hour', 12)
-                        },
-                        {
-                            id: '4',
-                            start_date: moment().add(1, 'days').startOf('day').set('hour', 12),
-                            end_date: moment().add(3, 'days').startOf('day').set('hour', 12)
-                        }
-                    ]
-                },
-                {
-                    name: '102',
-                    group: 'Floor 1',
-                    tasks: [
-                        {
-                            id: '3',
-                            start_date: moment().add(-2, 'days').startOf('day').set('hour', 12),
-                            end_date: moment().add(-1, 'days').startOf('day').set('hour', 12)
-                        }, 
-                        {
-                            id: '4',
-                            start_date: moment().add(1, 'days').startOf('day').set('hour', 12),
-                            end_date: moment().add(3, 'days').startOf('day').set('hour', 12)
-                        }
-
-                    ]
-                },
-                {
-                    name: '103',
-                    group: 'Floor 1',
-                    tasks: [
-                        {
-                            id: '5',
-                            start_date: moment().add(0, 'days').startOf('day').set('hour', 12),
-                            end_date: moment().add(2, 'days').startOf('day').set('hour', 12)
-                        },
-                        {
-                            id: '8',
-                            start_date: moment().add(-1, 'days').startOf('day').set('hour', 12),
-                            end_date: moment().add(0, 'days').startOf('day').set('hour', 12)
-                        }
-
-                    ]
-                },
-                {
-                    name: '201',
-                    group: 'Floor 2',
-                    tasks: [
-                        {
-                            id: '6',
-                            start_date: moment().add(6, 'days').startOf('day').set('hour', 12),
-                            end_date: moment().add(8, 'days').startOf('day').set('hour', 12)
-                        },
-                        {
-                            id: '10',
-                            start_date: moment().add(-2, 'days').startOf('day').set('hour', 12),
-                            end_date: moment().add(-1, 'days').startOf('day').set('hour', 12)
-                        },
-                        {
-                            id: '11',
-                            start_date: moment().add(0, 'days').startOf('day').set('hour', 12),
-                            end_date: moment().add(1, 'days').startOf('day').set('hour', 12)
-                        }
-
-
-                    ]
-                },
-                {
-                    name: '202',
-                    group: 'Floor 2',
-                    tasks: [
-                        {
-                            id: '7',
-                            start_date: moment().add(3, 'days').startOf('day').set('hour', 12),
-                            end_date: moment().add(5, 'days').startOf('day').set('hour', 12)
-                        },
-                        {
-                            id: '9',
-                            start_date: moment().add(-1, 'days').startOf('day').set('hour', 12),
-                            end_date: moment().add(2, 'days').startOf('day').set('hour', 12)
-                        }
-
-                    ]
-                }
-            ]
+            tasks: tasks,
+            users: users,
         });
 
     });

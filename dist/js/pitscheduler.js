@@ -13,7 +13,7 @@ var i18n = {
     en: {
         day: 'Day',
         days: 'Days',
-        tendays: '10 Days',
+        tendays: '15 Days',
         months: 'Months',
         list: 'List',
         tasks: 'Tasks',
@@ -126,7 +126,7 @@ var i18n = {
                 selected: (options.defaultDate && moment(options.defaultDate).isValid() ? moment(options.defaultDate) : moment())
             },
             locale: (options.locale && i18n.allowed.indexOf(options.locale) != -1 ? options.locale : i18n.allowed[0]), //if no locale is defined, it takes the first allowed one
-            currentDisplay: (options.defaultDisplay && 'days;10days;months;list'.indexOf(options.defaultDisplay) != -1 ? options.defaultDisplay : 'months'),
+            currentDisplay: (options.defaultDisplay && 'days;15days;months;list'.indexOf(options.defaultDisplay) != -1 ? options.defaultDisplay : 'months'),
             projectState : 'production', //debug will log all function calls, development will only log the important ones
             tasks: options.tasks || [],
             users: options.users || [],
@@ -137,7 +137,8 @@ var i18n = {
             resize: {},
             filters: [],
             startIndex: options.startIndex || 0,
-            numDays: options.numDays || 10,
+            numDays: options.numDays || 15,
+            taskTransparency: options.taskTransparency || 88,
         }, options);
 
         moment.locale(settings.locale);
@@ -181,10 +182,10 @@ var i18n = {
                     updateHeaderDates();
                     $('.pts-line-title-container div').scrollTop(scrollTop);
                     break;
-                case '10days':
+                case '15days':
                     // settings.date.selected = moment();
-                    setButtonViewFocus('10days');
-                    settings.currentDisplay = '10days';
+                    setButtonViewFocus('15days');
+                    settings.currentDisplay = '15days';
                     initMainContent();
                     updateHeaderDates();
                     $('.pts-line-title-container div').scrollTop(scrollTop);
@@ -239,7 +240,7 @@ var i18n = {
                 case 'days':
                     $('.pts-header-date-display').append(moment(settings.date.selected).locale(settings.locale).format('LL'));
                     break;
-                case '10days':
+                case '15days':
                     var range = getDateRange(settings.date.selected,{custom:true});
                     var text = moment(range.start).locale(settings.locale).format('D MMMM') + ' - ' + moment(range.end).locale(settings.locale).format('D MMMM YYYY');
                     if (moment(range.start).isSame(range.end, 'month')) {
@@ -302,6 +303,7 @@ var i18n = {
             task.users = {};
             if (! settings.users) return generateNotification('danger', settings.i18n.notif.noUser );
             if (!task.color) task.color = (settings.defaultColor ? settings.defaultColor : '#00bdd6');
+            task.color = hex2rgba(task.color, settings.taskTransparency);
             settings.users.forEach(function (user, userIndex) {
                 user.index = userIndex;
                 if (user.tasks) {
@@ -443,7 +445,7 @@ var i18n = {
             closeToolbox();
             if (settings.currentDisplay == 'months') {
                 settings.date.selected = moment(settings.date.selected).add(1, 'months');
-            } else if (settings.currentDisplay == '10days') {
+            } else if (settings.currentDisplay == '15days') {
                 // if (moment(settings.date.selected).date() > 20) {
                 //   settings.date.selected = moment(settings.date.selected).add(1, 'months').set('date', 1);;
                 // } else {
@@ -468,7 +470,7 @@ var i18n = {
             closeToolbox();
             if (settings.currentDisplay == 'months') {
                 settings.date.selected = moment(settings.date.selected).add(-1, 'months');
-            } else if (settings.currentDisplay == '10days') {
+            } else if (settings.currentDisplay == '15days') {
                 // if (moment(settings.date.selected).date() <= 10) {
                 //   settings.date.selected = moment(settings.date.selected).add(-1, 'months').set('date', 21);
                 // } else {
@@ -552,7 +554,7 @@ var i18n = {
                 start_date: (settings.currentDisplay == 'days' ? moment(settings.date.selected).startOf('day') : moment(settings.date.selected).startOf('month')),
                 end_date: (settings.currentDisplay == 'days' ? moment(settings.date.selected).endOf('day') : moment(settings.date.selected).endOf('month'))
             };
-            if (settings.currentDisplay == '10days') {
+            if (settings.currentDisplay == '15days') {
               var range = getDateRange(settings.date.selected, {custom:true});
               originDates.start_date = range.start;
               originDates.end_date = range.end;
@@ -590,7 +592,7 @@ var i18n = {
                 }
             });
             ////return tasks.length * 40;
-            return 40;
+            return 33;
         };
 
         /**
@@ -607,7 +609,7 @@ var i18n = {
                     start_date: (settings.currentDisplay == 'days' ? moment(settings.date.selected).startOf('day') : moment(settings.date.selected).startOf('month')),
                     end_date: (settings.currentDisplay == 'days' ? moment(settings.date.selected).endOf('day') : moment(settings.date.selected).endOf('month'))
                 };
-            if (settings.currentDisplay == '10days') {
+            if (settings.currentDisplay == '15days') {
                 var range = getDateRange(settings.date.selected,{custom:true});
                 originDates = {start_date:range.start, end_date:range.end};
             }
@@ -1319,7 +1321,7 @@ var i18n = {
                 '</span></div>',
                 '<div class="pts-header-right-container pull-right">',
                 '<button class="btn btn-sm pts-btn-day-view ' + (settings.currentDisplay === "days" ? "pts-active" : "") + '">' + settings.i18n.days + '</button>',
-                '<button class="btn btn-sm pts-btn-10days-view ' + (settings.currentDisplay === "10days" ? "pts-active" : "") + '">' + settings.i18n.tendays + '</button>',
+                '<button class="btn btn-sm pts-btn-15days-view ' + (settings.currentDisplay === "15days" ? "pts-active" : "") + '">' + settings.i18n.tendays + '</button>',
                 '<button class="btn btn-sm pts-btn-month-view ' + (settings.currentDisplay === "months" ? "pts-active" : "") + '">' + settings.i18n.months + '</button>',
                 '<button class="btn btn-sm pts-btn-list-view" ' + (settings.currentDisplay === "list" ? "pts-active" : "") + '>' + settings.i18n.list + '</button></div></div>'].join('\n');
 
@@ -1351,7 +1353,7 @@ var i18n = {
         };
 
         /**
-         * Get 10 days Range
+         * Get days Range
          */
         var getDateRange = function (theDate, option) {
 
@@ -1399,7 +1401,7 @@ var i18n = {
                     }
                     lineInterval += 80;
                 }
-              } else if (settings.currentDisplay == '10days') {
+              } else if (settings.currentDisplay == '15days') {
                   var range = getDateRange(settings.date.selected,{custom:true});
                   var dayDate = moment(settings.date.selected).add(-settings.startIndex,'days').startOf('day'),
                       lineInterval = 0,
@@ -1410,11 +1412,12 @@ var i18n = {
                   for (var i=0; i<settings.numDays; i++) {
                       var loopDate = moment(dayDate).format('D');
                       var isToday = ( moment(dayDate).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD') );
+                      var is_weekend = isWeekend(dayDate);
                       $('.pts-column-title-container > div').append(
-                          '<div class="pts-column-element ' + (isToday?'today':'') + '" data-date="' + moment(dayDate).format('YYYY-MM-DD') + '">' +
+                          '<div class="pts-column-element '+(isToday?'today':'')+(is_weekend?' weekend':'')+'" data-date="' + moment(dayDate).format('YYYY-MM-DD') + '">' +
                           ("<p>"+ dayDate.locale(settings.locale).format('ddd') + ' ' + loopDate +"</p>") + '</div>'
                       );
-                      $('.pts-main-content').append('<div class="pts-main-group-column" style="left:' + lineInterval + 'px"><div></div></div>');
+                      $('.pts-main-content').append('<div class="pts-main-group-column '+(isToday?'today':'')+(is_weekend?' weekend':'')+'" style="left:' + lineInterval + 'px"><div></div></div>');
                       lineInterval += 80;
                       dayDate.add(1, 'day');
                   }
@@ -1424,12 +1427,13 @@ var i18n = {
                     daysInMonth = parseInt(moment(settings.date.selected).daysInMonth()) + 1;
                 for (var i=1; i <= daysInMonth; i++) {
                     var isToday = ( moment(dayDate).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD') );
+                    var is_weekend = isWeekend(dayDate);
                     $('.pts-column-title-container > div').append(
-                        '<div class="pts-column-element ' + (isToday?'today':'') + '" data-date="' + moment(dayDate).format('YYYY-MM-DD') + '">' +
+                        '<div class="pts-column-element '+(isToday?'today':'')+(is_weekend?' weekend':'')+'" data-date="' + moment(dayDate).format('YYYY-MM-DD') + '">' +
                         (i < daysInMonth  ? "<p>"+ dayDate.locale(settings.locale).format('ddd') + ' ' + i +"</p>" : "") + '</div>'
                     );
                     if (i < daysInMonth) {
-                        $('.pts-main-content').append('<div class="pts-main-group-column" style="left:' + lineInterval + 'px"><div></div></div>');
+                        $('.pts-main-content').append('<div class="pts-main-group-column '+(isToday?'today':'')+(is_weekend?' weekend':'')+'" style="left:' + lineInterval + 'px"><div></div></div>');
                     }
                     lineInterval += 80;
                     dayDate.add(1, 'day');
@@ -1499,7 +1503,7 @@ var i18n = {
             if (settings.currentDisplay == 'days') {
                 $('.pts-main-group-header').css('width', '2880px');
                 $('.pts-main-group-user').css('width', '2880px');
-            } else if (settings.currentDisplay == '10days') {
+            } else if (settings.currentDisplay == '15days') {
               $('.pts-main-group-header').css('width', (80 * settings.numDays) + 'px');
               $('.pts-main-group-user').css('width', (80 * settings.numDays) + 'px');
             } else {
@@ -1561,7 +1565,7 @@ var i18n = {
 
             if (!userHasTask(user)) return log.log('No task for this user in that period');
             user.index = userIndex;
-            var topDistance = 5;
+            var topDistance = 1;
             if (!user.tasks) return;
             user.tasks.forEach(function (e, i) {
                 var task = $.extend(getTaskById(e.id), e);
@@ -1580,7 +1584,7 @@ var i18n = {
                                 generateTaskLineMonth(user, task, topDistance);
                             }
                         }
-                    } else if (settings.currentDisplay === '10days') {
+                    } else if (settings.currentDisplay === '15days') {
                         var range = getDateRange(settings.date.selected, {custom:true});
                         task = hideTaskSuperposition(i, task, user);
                         if (task.end_date) {
@@ -2401,6 +2405,23 @@ var i18n = {
                 .keepOpen(false);
         };
 
+        /********* Custom Functions *********/
+        var isWeekend = function(date) {
+            date = moment(date);
+            var weekday = date.weekday();
+            return (weekday == 0 || weekday == 6)
+        }
+
+        var hex2rgba = function(hex,opacity){
+           var hex = hex.replace('#','');
+           var r = parseInt(hex.substring(0, hex.length/3), 16);
+           var g = parseInt(hex.substring(hex.length/3, 2*hex.length/3), 16);
+           var b = parseInt(hex.substring(2*hex.length/3, 3*hex.length/3), 16);
+
+           var result = 'rgba('+r+','+g+','+b+','+opacity/100+')';
+           return result;
+        }
+
 
         /********* Initialization *********/
 
@@ -2429,12 +2450,13 @@ var i18n = {
         $('.pts-btn-day-view').click( function () {
             updateDisplay('days');
         });
-        $('.pts-btn-10days-view').click( function () {
-            updateDisplay('10days');
+        $('.pts-btn-15days-view').click( function () {
+            updateDisplay('15days');
             settings.date.selected = moment();
         });
         $('.pts-btn-month-view').click( function () {
             updateDisplay('months');
+            $('.pts-main-content').parent().scrollLeft($('.today').offset().left)
         });
         $('.pts-btn-list-view').click( function () {
             updateDisplay('list');
@@ -2879,7 +2901,7 @@ var i18n = {
                 },
 
                 viewMode: function (viewMode) {
-                    if ('days;10days;months;list'.indexOf(viewMode) !== -1) {
+                    if ('days;15days;months;list'.indexOf(viewMode) !== -1) {
                         settings.currentDisplay = viewMode;
                         updateDisplay(settings.currentDisplay);
                     } else {

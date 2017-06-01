@@ -140,6 +140,10 @@
     var users = [{
             name: '101',
             group: 'Floor 1',
+            status : {
+              clean : true,
+              checkin : true,
+            },
             tasks: [{
                     id: '2',
                     start_date: moment().add(-2, 'days').startOf('day').set('hour', 12),
@@ -155,6 +159,10 @@
         {
             name: '102',
             group: 'Floor 1',
+            status : {
+              clean : false,
+              checkin : true,
+            },
             tasks: [{
                     id: '3',
                     start_date: moment().add(-2, 'days').startOf('day').set('hour', 12),
@@ -171,6 +179,10 @@
         {
             name: '103',
             group: 'Floor 1',
+            status : {
+              clean : true,
+              checkin : false,
+            },
             tasks: [{
                     id: '5',
                     start_date: moment().add(0, 'days').startOf('day').set('hour', 12),
@@ -190,6 +202,10 @@
         var user = {
             name: ( (i<4 ? 200 : 300) +i ).toString(),
             group: 'Floor '+(i<4 ? 2 : 3),
+            status : {
+              clean : (Math.random() >= 0.5),
+              checkin : (Math.random() >= 0.5),
+            },
             tasks: []
         }
 

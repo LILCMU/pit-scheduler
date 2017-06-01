@@ -139,6 +139,9 @@ var i18n = {
             startIndex: options.startIndex || 0,
             numDays: options.numDays || 15,
             taskTransparency: options.taskTransparency || 88,
+            columnWidth: 60,
+            columnWidthMin: 36,
+            columnWidthDefault: 60,
         }, options);
 
         moment.locale(settings.locale);
@@ -174,6 +177,10 @@ var i18n = {
 
             var scrollTop = $('.pts-scheduler-container').scrollTop();
             updateDisplayReset();
+
+            settings.columnWidth = settings.columnWidthDefault;
+            var contentWidth = $('.pts-scheduler-container').width()-15;
+
             switch (viewMode) {
                 case 'days':
                     setButtonViewFocus('day');
@@ -183,6 +190,11 @@ var i18n = {
                     $('.pts-line-title-container div').scrollTop(scrollTop);
                     break;
                 case '15days':
+                    if (contentWidth>600){
+                        settings.columnWidth = contentWidth/15.6;
+                    } else {
+                        settings.columnWidth = settings.columnWidthMin;
+                    }
                     // settings.date.selected = moment();
                     setButtonViewFocus('15days');
                     settings.currentDisplay = '15days';
@@ -191,6 +203,14 @@ var i18n = {
                     $('.pts-line-title-container div').scrollTop(scrollTop);
                     break;
                 case 'months':
+
+                    var daysInMonth = parseInt(moment(settings.date.selected).daysInMonth()) + 1;
+                    if (contentWidth>800){
+                        settings.columnWidth = contentWidth/daysInMonth;
+                    } else {
+                        settings.columnWidth = settings.columnWidthMin;
+                    }
+
                     setButtonViewFocus('month');
                     settings.currentDisplay = 'months';
                     initMainContent();
@@ -1320,10 +1340,11 @@ var i18n = {
                 (settings.currentDisplay === "months" ? moment(settings.date.selected).locale(settings.locale).format('MMMM YYYY') : moment(settings.date.selected).locale(settings.locale).format('LL')),
                 '</span></div>',
                 '<div class="pts-header-right-container pull-right">',
-                '<button class="btn btn-sm pts-btn-day-view ' + (settings.currentDisplay === "days" ? "pts-active" : "") + '">' + settings.i18n.days + '</button>',
+                //'<button class="btn btn-sm pts-btn-day-view ' + (settings.currentDisplay === "days" ? "pts-active" : "") + '">' + settings.i18n.days + '</button>',
                 '<button class="btn btn-sm pts-btn-15days-view ' + (settings.currentDisplay === "15days" ? "pts-active" : "") + '">' + settings.i18n.tendays + '</button>',
                 '<button class="btn btn-sm pts-btn-month-view ' + (settings.currentDisplay === "months" ? "pts-active" : "") + '">' + settings.i18n.months + '</button>',
-                '<button class="btn btn-sm pts-btn-list-view" ' + (settings.currentDisplay === "list" ? "pts-active" : "") + '>' + settings.i18n.list + '</button></div></div>'].join('\n');
+                //'<button class="btn btn-sm pts-btn-list-view" ' + (settings.currentDisplay === "list" ? "pts-active" : "") + '>' + settings.i18n.list + '</button>',
+                '</div></div>'].join('\n');
 
             $scheduler.append($header);
             updateDatePicker();
@@ -1399,15 +1420,13 @@ var i18n = {
                     if (i < 24) {
                         $('.pts-main-content').append('<div class="pts-main-group-column" style="left:' + lineInterval + 'px"><div></div></div>');
                     }
-                    lineInterval += 80;
+                    lineInterval += settings.columnWidth;
                 }
               } else if (settings.currentDisplay == '15days') {
                   var range = getDateRange(settings.date.selected,{custom:true});
                   var dayDate = moment(settings.date.selected).add(-settings.startIndex,'days').startOf('day'),
                       lineInterval = 0,
                       daysInMonth = parseInt(moment(settings.date.selected).daysInMonth()) + 1;
-
-                  var numDays = 10;
 
                   for (var i=0; i<settings.numDays; i++) {
                       var loopDate = moment(dayDate).format('D');
@@ -1418,13 +1437,23 @@ var i18n = {
                           ("<p>"+ dayDate.locale(settings.locale).format('ddd') + ' ' + loopDate +"</p>") + '</div>'
                       );
                       $('.pts-main-content').append('<div class="pts-main-group-column '+(isToday?'today':'')+(is_weekend?' weekend':'')+'" style="left:' + lineInterval + 'px"><div></div></div>');
-                      lineInterval += 80;
+                      lineInterval += settings.columnWidth;
                       dayDate.add(1, 'day');
                   }
+
+                  $('.pts-column-title-container .pts-column-element').width(settings.columnWidth-1);
+
+                  $('.pts-main-content .pts-main-group-column').width(settings.columnWidth-1);
+
+                  $('.pts-main-group-column div').css( { 'margin-left': settings.columnWidth/2} );
+
             } else if (settings.currentDisplay == 'months') {
+
                 var dayDate = moment(settings.date.selected).add(-1 * (moment(settings.date.selected).format('D') - 1), 'day'),
                     lineInterval = 0,
                     daysInMonth = parseInt(moment(settings.date.selected).daysInMonth()) + 1;
+                var columnWidth = settings.columnWidth;
+
                 for (var i=1; i <= daysInMonth; i++) {
                     var isToday = ( moment(dayDate).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD') );
                     var is_weekend = isWeekend(dayDate);
@@ -1435,9 +1464,15 @@ var i18n = {
                     if (i < daysInMonth) {
                         $('.pts-main-content').append('<div class="pts-main-group-column '+(isToday?'today':'')+(is_weekend?' weekend':'')+'" style="left:' + lineInterval + 'px"><div></div></div>');
                     }
-                    lineInterval += 80;
+                    lineInterval += columnWidth;
                     dayDate.add(1, 'day');
                 }
+
+                $('.pts-column-title-container .pts-column-element').width(columnWidth-1);
+
+                $('.pts-main-content .pts-main-group-column').width(columnWidth-1);
+
+                $('.pts-main-group-column div').css( { 'margin-left': columnWidth/2} );
             }
             var $settingsMenu = ['<div style="display:inline-flex"><div class="dropdown" style="top:2px"><button id="addDropdown" class="btn btn-sm pts-btn-add-elem dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">',
                 '<i class="glyphicon glyphicon-plus"></i></button>',
@@ -1504,11 +1539,11 @@ var i18n = {
                 $('.pts-main-group-header').css('width', '2880px');
                 $('.pts-main-group-user').css('width', '2880px');
             } else if (settings.currentDisplay == '15days') {
-              $('.pts-main-group-header').css('width', (80 * settings.numDays) + 'px');
-              $('.pts-main-group-user').css('width', (80 * settings.numDays) + 'px');
+              $('.pts-main-group-header').css('width', (settings.columnWidth * settings.numDays) + 'px');
+              $('.pts-main-group-user').css('width', (settings.columnWidth * settings.numDays) + 'px');
             } else {
-                $('.pts-main-group-header').css('width', (80 * moment(settings.date.selected).daysInMonth()) + 'px');
-                $('.pts-main-group-user').css('width', (80 * moment(settings.date.selected).daysInMonth()) + 'px');
+                $('.pts-main-group-header').css('width', (settings.columnWidth * moment(settings.date.selected).daysInMonth()) + 'px');
+                $('.pts-main-group-user').css('width', (settings.columnWidth * moment(settings.date.selected).daysInMonth()) + 'px');
             }
             settings.users.forEach(function (user, userIndex) {
                 generateTaskLines(user, userIndex);
@@ -1549,7 +1584,10 @@ var i18n = {
             if (!user.tasks) return log.warn('Warning: user ' + user.name + ' is assigned to any task');
             if (!user.isShowed || user.lineHeight <= 0 || !group) return;
 
-            var $userNameUI = '<div class="pts-group-user pts-show-user" style="height:' + user.lineHeight + 'px" data-user="' + user.index + '"><p>' + user.name + '</p></div>';
+            var cleanStatus   = ' <img width="16" height="16" src="img/clean-'+ (+user.status.clean) +'.png"> ';
+            var checkinStatus = ' <img width="16" height="16" src="img/checkin-'+ (+user.status.checkin) +'.png"> ';
+
+            var $userNameUI = '<div class="pts-group-user pts-show-user" style="height:' + user.lineHeight + 'px" data-user="' + user.index + '"><p>' + user.name + cleanStatus + checkinStatus +  '</p></div>';
 
             $('#' + group + ' > .pts-group-content').append($userNameUI);
 
@@ -1632,14 +1670,14 @@ var i18n = {
 
             // If the task start date is in the current month
             if (moment(settings.date.selected).format('YYYYMM') == moment(task.start_date).format('YYYYMM')) {
-                var splitted = (moment(task.start_date).format('H') >= 12 ? 40 : 0),
-                    leftDistance = (80 * (moment(task.start_date).format('D') - 1)) + splitted - 6,
+                var splitted = (moment(task.start_date).format('H') >= 12 ? (settings.columnWidth/2) : 0),
+                    leftDistance = (settings.columnWidth * (moment(task.start_date).format('D') - 1)) + splitted - 6,
                     label_end = false;
 
                 if (moment(task.end_date).format('YYYYMM') > moment(settings.date.selected).format('YYYYMM')) {
-                    var labelWidth = 80 * (parseInt(moment(settings.date.selected).daysInMonth()) - parseInt(moment(task.start_date).format('D'))) + (splitted == 0 ? 80 : 40);
+                    var labelWidth = settings.columnWidth * (parseInt(moment(settings.date.selected).daysInMonth()) - parseInt(moment(task.start_date).format('D'))) + (splitted == 0 ? settings.columnWidth : (settings.columnWidth/2));
                 } else {
-                    var labelWidth = 80 * (moment(task.end_date).format('D') - moment(task.start_date).format('D') ) + (splitted == 0 ? 80 : 40) - (moment(task.end_date).format('H') <= 12 ? (moment(task.end_date).format('H') == 0 ? 80 : 40) : 0);
+                    var labelWidth = settings.columnWidth * (moment(task.end_date).format('D') - moment(task.start_date).format('D') ) + (splitted == 0 ? settings.columnWidth : (settings.columnWidth/2)) - (moment(task.end_date).format('H') <= 12 ? (moment(task.end_date).format('H') == 0 ? settings.columnWidth : (settings.columnWidth/2)) : 0);
                     label_end = true;
                 }
                 topDistance = parseInt(topDistance);
@@ -1655,8 +1693,8 @@ var i18n = {
             if (moment(settings.date.selected).format('YYYYMM') == moment(task.end_date).format('YYYYMM')) {
                 if (moment(task.start_date).format('YYYYMM') < moment(settings.date.selected).format('YYYYMM')) {
 
-                    var splitted = (moment(task.end_date).format('H') <= 12 ? 40 : 0);
-                    var labelWidth = 80 * (moment(task.end_date).format('D')) - splitted - (moment(task.end_date).format('H') == 0 ? 40 : 0);
+                    var splitted = (moment(task.end_date).format('H') <= 12 ? (settings.columnWidth/2) : 0);
+                    var labelWidth = settings.columnWidth * (moment(task.end_date).format('D')) - splitted - (moment(task.end_date).format('H') == 0 ? (settings.columnWidth/2) : 0);
 
                     topDistance = parseInt(topDistance);
                     var $task = ['<div class="pts-check-color progress-bar-striped pts-line-marker end" style="top:' + topDistance + 'px;left:0px;background-color:' + task.color + ';width:'+labelWidth+'px" data-task="' + task.id + '" data-user="' + userIndex + '">',
@@ -1675,7 +1713,7 @@ var i18n = {
             }
             setTaskLabelPosition();
             getContrastedColor();
-            return (existingTaskLine.length > 0 ? 0 : 40);
+            return (existingTaskLine.length > 0 ? 0 : (settings.columnWidth/2));
         };
 
         /**
@@ -1702,14 +1740,14 @@ var i18n = {
 
             // If the task start date is in the current range
             if (moment(task.start_date).isBetween(range.start, range.end, 'days', '[]')) {
-                var splitted = (moment(task.start_date).format('H') >= 12 ? 40 : 0),
+                var splitted = (moment(task.start_date).format('H') >= 12 ? (settings.columnWidth/2) : 0),
                     label_end = false,
-                    leftDistance = (80 * ( moment(task.start_date).diff(range.start, 'days') )) + splitted - 6;
+                    leftDistance = (settings.columnWidth * ( moment(task.start_date).diff(range.start, 'days') )) + splitted - 6;
 
                 if (moment(task.end_date).isAfter(range.end)) {
-                    var labelWidth = 80 * ( moment(range.end).diff(task.start_date, 'days') ) + (splitted == 0 ? 80 : 40);
+                    var labelWidth = settings.columnWidth * ( moment(range.end).diff(task.start_date, 'days') ) + (splitted == 0 ? settings.columnWidth : (settings.columnWidth/2));
                 } else {
-                    var labelWidth = 80 * ( moment(task.end_date).diff(task.start_date, 'days') ) + (splitted == 0 ? 80 : 40) - (moment(task.end_date).format('H') <= 12 ? (moment(task.end_date).format('H') == 0 ? 80 : 40) : 0);
+                    var labelWidth = settings.columnWidth * ( moment(task.end_date).diff(task.start_date, 'days') ) + (splitted == 0 ? settings.columnWidth : (settings.columnWidth/2)) - (moment(task.end_date).format('H') <= 12 ? (moment(task.end_date).format('H') == 0 ? settings.columnWidth : (settings.columnWidth/2)) : 0);
                     label_end = true;
                 }
                 topDistance = parseInt(topDistance);
@@ -1725,10 +1763,10 @@ var i18n = {
             if (moment(task.end_date).isBetween(range.start, range.end, 'days', '[]')) {
 
                 if (moment(task.start_date).isBefore(range.start)) {
-                    var splitted = (moment(task.end_date).format('H') <= 12 ? 40 : 0);
+                    var splitted = (moment(task.end_date).format('H') <= 12 ? (settings.columnWidth/2) : 0);
                     var dayDiff = moment(moment(task.end_date).startOf('day')).diff(moment(task.start_date).startOf('day'), 'days');
                     var dayDiff = moment(task.end_date).diff(task.start_date, 'days');
-                    var labelWidth = 80 * (dayDiff) - splitted - (moment(task.end_date).format('H') == 0 ? 40 : 0);
+                    var labelWidth = settings.columnWidth * (dayDiff) - splitted - (moment(task.end_date).format('H') == 0 ? (settings.columnWidth/2) : 0);
 
                     topDistance = parseInt(topDistance);
                     var $task = ['<div class="pts-check-color progress-bar-striped pts-line-marker end" style="top:' + topDistance + 'px;left:0px;background-color:' + task.color + ';width:'+labelWidth+'px" data-task="' + task.id + '" data-user="' + userIndex + '">',
@@ -2428,6 +2466,8 @@ var i18n = {
         getUsersTasksInTasks();
         generateHeader();
         updateDisplay(settings.currentDisplay);
+        console.log('init');
+        updateDisplay(settings.currentDisplay);
 
         /********* Events *********/
 
@@ -2451,12 +2491,14 @@ var i18n = {
             updateDisplay('days');
         });
         $('.pts-btn-15days-view').click( function () {
-            updateDisplay('15days');
             settings.date.selected = moment();
+            updateDisplay('15days');
         });
         $('.pts-btn-month-view').click( function () {
             updateDisplay('months');
-            $('.pts-main-content').parent().scrollLeft($('.today').offset().left)
+            //Scroll to current date
+            //$('.pts-main-content').parent().scrollLeft($('.today').offset().left)
+
         });
         $('.pts-btn-list-view').click( function () {
             updateDisplay('list');

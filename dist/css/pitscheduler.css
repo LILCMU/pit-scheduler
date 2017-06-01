@@ -177,8 +177,8 @@
 }
 .pts-column-element {
     position: relative;
-    width: 80px;
-    min-width: 80px;
+    /*width: 80px;
+    min-width: 80px;*/
     border-right: 1px solid #0097a7;
     text-align: center;
 }
@@ -317,7 +317,7 @@
 .pts-main-group-column > div {
     border-left: 1px solid #eee;
     height: 100%;
-    margin-left: 40px;
+    /*margin-left: 40px;*/
     width: 100%;
 }
 
